@@ -13,25 +13,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 @Tag(name = "Banking Services", description = "Secure Banking Operations")
 public class BankingController {
+
     @Autowired
     private BankingService bankingService;
 
     @GetMapping("/balance")
     @Operation(
             summary = "Get Account Balance",
-            description = "Retrieve current account balance"
-//            ,security = @SecurityRequirement(name="bearerAuth")
+            description = "Retrieve current account balance",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<AccountBalance> getBalance(@RequestParam String accountNumber){
+    public ResponseEntity<AccountBalance> getBalance(@RequestParam String accountNumber) {
         return ResponseEntity.ok(bankingService.getAccountBalance(accountNumber));
-    }
-
-    @GetMapping("/{endpoint}")
-    @Operation(summary="Maintenance Endpoint", description = "Endpoints under maintenance")
-    public ResponseEntity<String> maintenanceEndpoint(@PathVariable String endpoint){
-        if(!endpoint.equals("login") && !endpoint.equals("balance")){
-            return ResponseEntity.ok("This Page is currently in maintenance");
-        }
-        return ResponseEntity.notFound().build();
     }
 }

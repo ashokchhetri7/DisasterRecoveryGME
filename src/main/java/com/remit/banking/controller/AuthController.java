@@ -1,16 +1,13 @@
 package com.remit.banking.controller;
 
 import com.remit.banking.dto.LoginRequest;
-import com.remit.banking.service.UserDetailsServiceImpl;
-import com.remit.banking.util.JwtUtil;
+import com.remit.banking.dto.LoginResponse;
+import com.remit.banking.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -18,23 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private AuthService authService;
 
     @PostMapping("/login")
-    @Operation(summary = "User Login", description = "Authenticate user credentials")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-            if (userDetails.getPassword().equals(loginRequest.getPassword())) {
-                String token = jwtUtil.generateToken(userDetails.getUsername());
-                return ResponseEntity.ok(token);
-            }
-        } catch (UsernameNotFoundException e) {
-            // do nothing
-        }
-        return ResponseEntity.badRequest().body("Invalid Credentials");
+    @Operation(summary = "User Login", description = "Authenticate user credentials and generate JWT")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse loginResponse = authService.login(loginRequest);
+        return ResponseEntity.ok(loginResponse);
     }
 }

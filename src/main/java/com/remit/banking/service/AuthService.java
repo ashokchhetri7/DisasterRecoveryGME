@@ -1,35 +1,36 @@
 package com.remit.banking.service;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.Keys;
+import com.remit.banking.dto.LoginRequest;
+import com.remit.banking.dto.LoginResponse;
+import com.remit.banking.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
-import java.util.Date;
 
 @Service
 public class AuthService {
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
-    @Value("${jwt.expiration}")
-    private int jwtExpiration;
+    public LoginResponse login(LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword()
+                )
+        );
 
-    public boolean validateCredentials(String username, String password){
-        return "admin".equals(username) && "pass123".equals(password);
-    }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtTokenProvider.generateToken(authentication);
 
-    public String generateToken(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration * 1000))
-                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS512) // Fixed syntax
-                .compact();
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setToken(jwt);
+        return loginResponse;
     }
 }

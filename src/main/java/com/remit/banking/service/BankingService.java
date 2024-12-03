@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BankingService {
-    public AccountBalance getAccountBalance(String accountNumber){
+    public AccountBalance getAccountBalance(String accountNumber) {
+        // In a real-world scenario, this would fetch from a database
         AccountBalance balance = new AccountBalance();
         balance.setAccountNumber(accountNumber);
-        balance.setBalance((54350000.00));
+        balance.setBalance(50000.00);
         return balance;
     }
-
 }
