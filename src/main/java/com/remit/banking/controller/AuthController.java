@@ -6,6 +6,7 @@ import com.remit.banking.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,4 +24,11 @@ public class AuthController {
         LoginResponse loginResponse = authService.login(loginRequest);
         return ResponseEntity.ok(loginResponse);
     }
+
+//    @GetMapping("/login")
+//    @Operation(summary = "Login Endpoint", description = "Login Endpoint doesn not support GET Requests")
+//    public ResponseEntity<String> loginGet(){
+//        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+//                .body("Method not allowed");
+//    }
 }
